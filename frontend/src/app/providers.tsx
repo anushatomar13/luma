@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState, type ReactNode } from "react";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AppearanceProvider } from "@/components/app/appearance-provider";
+import { ServiceWorkerRegister } from "@/components/app/service-worker-register";
 import { CommandPalette } from "@/features/search/command-palette";
 
 /**
@@ -27,6 +28,7 @@ export function Providers({ children }: { children: ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AppearanceProvider />
+        <ServiceWorkerRegister />
         {children}
         <CommandPalette />
       </ThemeProvider>

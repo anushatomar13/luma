@@ -1,8 +1,14 @@
 "use client";
 
 import { Activity, ArrowUpRight } from "lucide-react";
-import { Area, AreaChart, ResponsiveContainer } from "recharts";
+import dynamic from "next/dynamic";
 import { defineWidget, type WidgetRenderProps } from "@/lib/widget-sdk";
+
+// Recharts is heavy — load it only when a Life Pulse widget renders.
+const LifePulseChart = dynamic(() => import("./life-pulse-chart"), {
+  ssr: false,
+  loading: () => <div className="size-full animate-pulse rounded-xl bg-white/5" />,
+});
 
 interface PulsePoint {
   day: string;
@@ -35,28 +41,7 @@ function LifePulseRenderer({ data }: WidgetRenderProps<LifePulseData>) {
       </div>
 
       <div className="mt-3 min-h-0 flex-1">
-        <ResponsiveContainer width="100%" height="100%">
-          <AreaChart
-            data={data.series}
-            margin={{ top: 6, right: 0, bottom: 0, left: 0 }}
-          >
-            <defs>
-              <linearGradient id="pulse-fill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="var(--brand)" stopOpacity={0.45} />
-                <stop offset="100%" stopColor="var(--brand)" stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <Area
-              type="monotone"
-              dataKey="value"
-              stroke="var(--brand)"
-              strokeWidth={2.5}
-              fill="url(#pulse-fill)"
-              isAnimationActive
-              animationDuration={900}
-            />
-          </AreaChart>
-        </ResponsiveContainer>
+        <LifePulseChart series={data.series} />
       </div>
     </div>
   );

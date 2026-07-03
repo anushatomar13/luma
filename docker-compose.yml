@@ -1,11 +1,25 @@
-# Production-like local stack. Dev defaults to SQLite (no services needed);
-# bring these up when you want to run against Postgres/Redis/Qdrant.
-#
-#   docker compose up -d
-#   DATABASE_URL=postgresql+asyncpg://luma:luma@localhost:5432/luma \
-#     ./backend/.venv/bin/alembic upgrade head
+# Full backend stack. `docker compose up` brings up Postgres, Redis, Qdrant, and
+# the API (which runs migrations on start). The frontend deploys to Vercel or via
+# frontend/Dockerfile. Dev without Docker defaults to SQLite + eager Celery.
 
 services:
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql+asyncpg://luma:luma@postgres:5432/luma
+      REDIS_URL: redis://redis:6379/0
+      QDRANT_URL: http://qdrant:6333
+      SECRET_KEY: change-me-in-production
+      CORS_ORIGINS: '["http://localhost:3000"]'
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+
   postgres:
     image: postgres:16-alpine
     environment:

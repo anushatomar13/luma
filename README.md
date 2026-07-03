@@ -43,17 +43,59 @@ Query, Zustand, next-themes, PWA, Mapbox, Recharts.
 **Infra** — PostgreSQL, Redis + Celery, Cloudflare R2. Deploy: Vercel (frontend),
 Railway/Fly.io (backend), GitHub Actions + Docker.
 
+## Features
+
+- **Customizable dashboard** — draggable, resizable, glassmorphic widgets on a
+  responsive layout engine; layout persists per user.
+- **Widgets** — Spotify (animated waveform), Life Pulse, Memories, Travel, Taste,
+  Today, Growth, Quote, plus AI **Insights** and **Timeline**.
+- **5-step onboarding** with live accent/theme personalization.
+- **Auth** — email/JWT + Google OAuth scaffold.
+- **Background pipeline** — Celery sync services normalize data into snapshots;
+  the AI layer generates embeddings, insights, and a timeline.
+- **Hybrid search** — ⌘K command palette over keyword + semantic embeddings.
+- **Recaps & share cards** — weekly/monthly summaries exportable as Story images.
+- **Installable PWA** — offline app shell, true-AMOLED dark UI.
+
 ## Getting started
+
+**Frontend**
 
 ```bash
 cd frontend
 npm install
-npm run dev        # http://localhost:3000
+npm run dev              # http://localhost:3000
 ```
 
-The backend and AI services come online in later phases (see `docs/ARCHITECTURE.md`).
+**Backend** (runs on SQLite + eager Celery with zero extra infra)
+
+```bash
+cd backend
+python3 -m venv .venv && ./.venv/bin/pip install -r requirements.txt
+./.venv/bin/alembic upgrade head
+./.venv/bin/uvicorn app.main:app --reload   # http://localhost:8000
+```
+
+**Everything via Docker** (Postgres + Redis + Qdrant + API)
+
+```bash
+docker compose up
+```
+
+Copy `backend/.env.example` → `backend/.env` and `frontend/.env.example` →
+`frontend/.env.local` to configure. All AI/integration features run on
+deterministic fallbacks out of the box; add `OPENAI_API_KEY`, Spotify, and Google
+credentials to enable the real providers.
+
+## Deployment
+
+- **Frontend** → Vercel (root directory `frontend/`), or `frontend/Dockerfile`.
+- **Backend** → Railway / Fly.io via `backend/Dockerfile`.
+- **Postgres** → Neon · **Redis** → Upstash · **Vectors** → Qdrant · **Storage** → Cloudflare R2.
+- **CI** → GitHub Actions (`.github/workflows/ci.yml`) lints + builds both apps.
 
 ## Status
 
-🚧 Early development — building frontend-first with mock data. See
-[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the phased roadmap.
+✅ Feature-complete across the phased roadmap (frontend, backend, AI, search,
+recaps, PWA). See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the roadmap
+and the Widget SDK design.

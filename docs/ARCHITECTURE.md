@@ -45,18 +45,22 @@ Runs asynchronously via Redis + Celery.
 
 ## Phased roadmap
 
-| Phase | Deliverable |
-|-------|-------------|
-| **0** | Foundation — monorepo, Next.js + Tailwind v4 + shadcn/ui, AMOLED theme, PWA baseline ✅ *(in progress)* |
-| **1** | Widget SDK contract + responsive layout engine + hero widgets on mock data |
-| **2** | Onboarding (5 steps) |
-| **3** | Backend core — FastAPI clean architecture, Postgres, JWT/OAuth |
-| **4** | Spotify widget end-to-end (sync service + live renderer) |
-| **5** | Background pipeline + Photos / Calendar / Location |
-| **6** | AI layer — embeddings, captions, insights, timeline (Qdrant) |
-| **7** | Hybrid natural-language search |
-| **8** | Weekly/monthly summaries + shareable Story cards |
-| **9** | Polish, performance, Docker, deploy |
+| Phase | Deliverable | |
+|-------|-------------|---|
+| **0** | Foundation — monorepo, Next.js + Tailwind v4 + shadcn/ui, AMOLED theme | ✅ |
+| **1** | Widget SDK contract + responsive layout engine + hero widgets | ✅ |
+| **2** | Onboarding (5 steps) with live theming | ✅ |
+| **3** | Backend core — FastAPI clean architecture, SQLAlchemy, JWT/OAuth | ✅ |
+| **4** | Spotify widget end-to-end (OAuth + sync service + live renderer) | ✅ |
+| **5** | Background pipeline (Celery) + sync-service framework | ✅ |
+| **6** | AI layer — embeddings, insights, timeline | ✅ |
+| **7** | Hybrid natural-language search + ⌘K palette | ✅ |
+| **8** | Weekly/monthly summaries + shareable Story cards | ✅ |
+| **9** | Polish, performance, PWA, Docker, CI, deploy config | ✅ |
+
+Fallback-first: AI (embeddings/insights), and live Google Photos/Calendar image
+captioning run on deterministic fallbacks and are gated on credentials — set
+`OPENAI_API_KEY`, Spotify, and Google keys to enable the real providers.
 
 ## Design language
 
