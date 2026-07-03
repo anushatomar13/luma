@@ -1,0 +1,22 @@
+# Web framework
+fastapi>=0.115
+uvicorn[standard]>=0.34
+
+# Database (async SQLAlchemy; SQLite for dev, Postgres for prod)
+sqlalchemy[asyncio]>=2.0
+aiosqlite>=0.20
+asyncpg>=0.30
+psycopg[binary]>=3.2
+alembic>=1.14
+
+# Validation / settings
+pydantic[email]>=2.10
+pydantic-settings>=2.7
+
+# Auth
+PyJWT>=2.10
+bcrypt>=4.2
+python-multipart>=0.0.9
+
+# HTTP client (OAuth token exchange, tests)
+httpx>=0.28

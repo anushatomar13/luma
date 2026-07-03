@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Search } from "lucide-react";
+import { UserMenu } from "./user-menu";
 
 /**
  * Global glass top bar. The search field is a placeholder until the
@@ -24,14 +25,7 @@ export function TopBar() {
           <span className="hidden sm:inline">Search your life…</span>
         </button>
 
-        <div
-          className="size-9 shrink-0 rounded-full"
-          style={{
-            backgroundImage:
-              "linear-gradient(135deg, var(--brand), var(--brand-2))",
-          }}
-          aria-hidden
-        />
+        <UserMenu />
       </div>
     </header>
   );
