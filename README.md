@@ -39,7 +39,7 @@ luma/
 **Frontend** — Next.js, TypeScript, Tailwind CSS v4, shadcn/ui, Motion, TanStack
 Query, Zustand, next-themes, PWA, Mapbox, Recharts.
 **Backend** — FastAPI, async SQLAlchemy, Alembic, Pydantic, JWT/OAuth2.
-**AI** — OpenAI, Gemini, Sentence Transformers, CLIP, BLIP, Qdrant (vectors).
+**AI** — Google Gemini (embeddings + insights), with deterministic fallbacks; Qdrant-ready.
 **Infra** — PostgreSQL, Redis + Celery, Cloudflare R2. Deploy: Vercel (frontend),
 Railway/Fly.io (backend), GitHub Actions + Docker.
 
@@ -84,8 +84,8 @@ docker compose up
 
 Copy `backend/.env.example` → `backend/.env` and `frontend/.env.example` →
 `frontend/.env.local` to configure. All AI/integration features run on
-deterministic fallbacks out of the box; add `OPENAI_API_KEY`, Spotify, and Google
-credentials to enable the real providers.
+deterministic fallbacks out of the box; add `GEMINI_API_KEY` (real AI) and Spotify
+credentials (real music) to enable the real providers.
 
 ## Deployment
 

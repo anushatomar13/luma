@@ -48,10 +48,7 @@ class FallbackInsights(InsightProvider):
         if memory and memory.get("memories"):
             first = memory["memories"][0]
             out.append(
-                {
-                    "title": "On this day",
-                    "body": f"A year ago: {first.get('title')}.",
-                }
+                {"title": "On this day", "body": f"A year ago: {first.get('title')}."}
             )
 
         if not out:
@@ -64,10 +61,12 @@ class FallbackInsights(InsightProvider):
         return out[:4]
 
 
-class OpenAIInsights(InsightProvider):
+class GeminiInsights(InsightProvider):
+    """Real insights via Google Gemini (generateContent, JSON mode)."""
+
     is_live = True
 
-    def __init__(self, api_key: str, model: str = "gpt-4o-mini") -> None:
+    def __init__(self, api_key: str, model: str) -> None:
         self.api_key = api_key
         self.model = model
 
@@ -76,27 +75,27 @@ class OpenAIInsights(InsightProvider):
 
         prompt = (
             "Given this JSON of a person's recent activity, return 3-4 short, warm, "
-            "specific insights as a JSON array of {title, body}. Be concrete, never "
-            "generic.\n\n" + json.dumps(context)
+            "specific insights as a JSON array of objects with 'title' and 'body'. "
+            "Be concrete, reference their actual data, never generic.\n\n"
+            + json.dumps(context)
         )
         res = httpx.post(
-            "https://api.openai.com/v1/chat/completions",
-            headers={"Authorization": f"Bearer {self.api_key}"},
+            f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent",
+            params={"key": self.api_key},
             json={
-                "model": self.model,
-                "messages": [{"role": "user", "content": prompt}],
-                "response_format": {"type": "json_object"},
+                "contents": [{"parts": [{"text": prompt}]}],
+                "generationConfig": {"responseMimeType": "application/json"},
             },
             timeout=30,
         )
         res.raise_for_status()
-        content = res.json()["choices"][0]["message"]["content"]
-        parsed = json.loads(content)
+        text = res.json()["candidates"][0]["content"]["parts"][0]["text"]
+        parsed = json.loads(text)
         items = parsed if isinstance(parsed, list) else parsed.get("insights", [])
         return items[:4]
 
 
 def get_insight_provider() -> InsightProvider:
-    if settings.openai_api_key:
-        return OpenAIInsights(settings.openai_api_key)
+    if settings.gemini_api_key:
+        return GeminiInsights(settings.gemini_api_key, settings.gemini_model)
     return FallbackInsights()

@@ -1,9 +1,9 @@
 """Luma's AI layer.
 
 Every capability (embeddings, insights, timeline) is a provider with a
-dependency-free deterministic fallback and an optional real backend (OpenAI /
-Gemini / Sentence-Transformers / Qdrant) selected by configuration. This keeps
-the whole pipeline runnable with zero model downloads or API keys.
+dependency-free deterministic fallback and an optional real backend (Google
+Gemini) selected by configuration. This keeps the whole pipeline runnable with
+zero model downloads or API keys.
 """
 
 

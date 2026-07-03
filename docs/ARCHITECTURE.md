@@ -60,7 +60,7 @@ Runs asynchronously via Redis + Celery.
 
 Fallback-first: AI (embeddings/insights), and live Google Photos/Calendar image
 captioning run on deterministic fallbacks and are gated on credentials — set
-`OPENAI_API_KEY`, Spotify, and Google keys to enable the real providers.
+`GEMINI_API_KEY`, Spotify, and Google keys to enable the real providers.
 
 ## Design language
 

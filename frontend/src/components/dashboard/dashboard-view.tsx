@@ -8,6 +8,7 @@ import { useDashboardStore } from "@/lib/store/dashboard-store";
 import { useHydratedDashboard } from "@/lib/hooks/use-hydrated-dashboard";
 import { useAuthStore } from "@/lib/store/auth-store";
 import { widgetsApi } from "@/lib/api/widgets";
+import { SpotifyConnect } from "@/components/app/spotify-connect";
 import { defaultLayout } from "@/widgets";
 import { cn } from "@/lib/utils";
 import { DashboardGrid } from "./dashboard-grid";
@@ -54,6 +55,7 @@ export function DashboardView() {
         </div>
 
         <div className="flex items-center gap-2">
+          <SpotifyConnect />
           {editing && (
             <ToolbarButton onClick={resetLayout}>
               <RotateCcw className="size-4" />

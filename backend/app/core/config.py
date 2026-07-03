@@ -58,15 +58,18 @@ class Settings(BaseSettings):
     def celery_always_eager(self) -> bool:
         return self.redis_url is None
 
-    # AI (optional — a deterministic local fallback runs without any of these)
-    openai_api_key: str | None = None
+    # AI (optional — a deterministic local fallback runs without any of these).
+    # Set GEMINI_API_KEY (from Google AI Studio) to use real Gemini embeddings
+    # + insights. No other AI keys are needed.
     gemini_api_key: str | None = None
+    gemini_model: str = "gemini-2.0-flash"
+    gemini_embedding_model: str = "text-embedding-004"
     qdrant_url: str | None = None
-    embedding_dim: int = 256
+    embedding_dim: int = 256  # fallback embedding size; Gemini uses its own
 
     @property
     def ai_configured(self) -> bool:
-        return bool(self.openai_api_key or self.gemini_api_key)
+        return bool(self.gemini_api_key)
 
 
 @lru_cache
