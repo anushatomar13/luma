@@ -58,6 +58,16 @@ class Settings(BaseSettings):
     def celery_always_eager(self) -> bool:
         return self.redis_url is None
 
+    # AI (optional — a deterministic local fallback runs without any of these)
+    openai_api_key: str | None = None
+    gemini_api_key: str | None = None
+    qdrant_url: str | None = None
+    embedding_dim: int = 256
+
+    @property
+    def ai_configured(self) -> bool:
+        return bool(self.openai_api_key or self.gemini_api_key)
+
 
 @lru_cache
 def get_settings() -> Settings:

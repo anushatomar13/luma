@@ -11,6 +11,14 @@ class SyncService:
     provider: str = ""
     widgets: list[str] = []
     supports_live: bool = False
+    # Services that derive from other widgets' data (e.g. AI insights) need the
+    # DB + user; the worker calls resolve_with_context for these.
+    needs_context: bool = False
+
+    def resolve_with_context(
+        self, widget_id: str, db: object, user_id: str
+    ) -> tuple[dict, bool]:
+        return self.resolve(widget_id, None)
 
     def is_configured(self) -> bool:
         """Whether real API credentials are set (else demo data is served)."""
