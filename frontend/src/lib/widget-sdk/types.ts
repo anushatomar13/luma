@@ -78,6 +78,8 @@ export function defineWidget<TData>(
 
 /** One entry in a dashboard layout: which widget, at what size. */
 export interface DashboardLayoutItem {
+  /** Stable unique instance id (allows the same widget to appear more than once). */
+  id: string;
   widgetId: string;
   size: WidgetSize;
 }

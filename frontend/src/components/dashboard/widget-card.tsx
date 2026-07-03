@@ -10,6 +10,8 @@ interface WidgetCardProps {
   /** Position in the grid, used to stagger the entrance animation. */
   index?: number;
   isLoading?: boolean;
+  /** Disable the hover-lift (e.g. while editing/dragging). */
+  disableHover?: boolean;
   className?: string;
   children: ReactNode;
 }
@@ -24,6 +26,7 @@ export function WidgetCard({
   icon: Icon,
   index = 0,
   isLoading = false,
+  disableHover = false,
   className,
   children,
 }: WidgetCardProps) {
@@ -32,7 +35,7 @@ export function WidgetCard({
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.06, ease: [0.22, 1, 0.36, 1] }}
-      whileHover={{ y: -3 }}
+      whileHover={disableHover ? undefined : { y: -3 }}
       className={cn(
         "glass group relative flex h-full flex-col overflow-hidden rounded-3xl p-5",
         "shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04),0_24px_48px_-28px_rgba(0,0,0,0.85)]",
