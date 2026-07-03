@@ -1,5 +1,6 @@
 import { Sparkles } from "lucide-react";
 import { defineWidget, type WidgetRenderProps } from "@/lib/widget-sdk";
+import { widgetsApi } from "@/lib/api/widgets";
 
 interface TodayData {
   greeting: string;
@@ -47,11 +48,17 @@ export const todayWidget = defineWidget<TodayData>({
     defaultSize: "md",
   },
   render: TodayRenderer,
-  getData: () => ({
-    greeting: "Good evening, Anusha",
-    dateLabel: "Friday · July 3",
-    weather: "28° Clear",
-    nextEvent: "Design review · 5:30",
-    nowPlaying: "Midnight City — M83",
-  }),
+  getData: async (): Promise<TodayData> => {
+    try {
+      return await widgetsApi.get<TodayData>("today");
+    } catch {
+      return {
+        greeting: "Good evening, Anusha",
+        dateLabel: "Friday · July 3",
+        weather: "28° Clear",
+        nextEvent: "Design review · 5:30",
+        nowPlaying: "Midnight City — M83",
+      };
+    }
+  },
 });

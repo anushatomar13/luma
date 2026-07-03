@@ -1,0 +1,15 @@
+from celery import Celery
+
+from app.core.config import settings
+
+celery_app = Celery(
+    "luma",
+    broker=settings.redis_url or "memory://",
+    backend=settings.redis_url or "cache+memory://",
+    include=["app.worker.tasks"],
+)
+
+# Without Redis configured, tasks run eagerly (in-process, synchronous) so the
+# pipeline works with zero extra infrastructure in dev.
+celery_app.conf.task_always_eager = settings.celery_always_eager
+celery_app.conf.task_eager_propagates = True

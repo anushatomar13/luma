@@ -2,6 +2,7 @@
 
 import { MapPin, Plane } from "lucide-react";
 import { defineWidget, type WidgetRenderProps } from "@/lib/widget-sdk";
+import { widgetsApi } from "@/lib/api/widgets";
 
 interface TravelData {
   place: string;
@@ -104,11 +105,17 @@ export const travelWidget = defineWidget<TravelData>({
     defaultSize: "lg",
   },
   render: TravelRenderer,
-  getData: () => ({
-    place: "Goa",
-    country: "India",
-    distanceKm: 1487,
-    daysSpent: 6,
-    weather: "31° Sunny",
-  }),
+  getData: async (): Promise<TravelData> => {
+    try {
+      return await widgetsApi.get<TravelData>("travel");
+    } catch {
+      return {
+        place: "Goa",
+        country: "India",
+        distanceKm: 1487,
+        daysSpent: 6,
+        weather: "31° Sunny",
+      };
+    }
+  },
 });

@@ -3,7 +3,7 @@
 import { motion } from "motion/react";
 import { Disc3 } from "lucide-react";
 import { defineWidget, type WidgetRenderProps } from "@/lib/widget-sdk";
-import { spotifyApi } from "@/lib/api/spotify";
+import { widgetsApi } from "@/lib/api/widgets";
 
 interface SpotifyData {
   track: string;
@@ -135,16 +135,7 @@ export const spotifyWidget = defineWidget<SpotifyData>({
   // otherwise). Falls back to local demo data if the API is unreachable.
   getData: async (): Promise<SpotifyData> => {
     try {
-      const d = await spotifyApi.getWidget();
-      return {
-        track: d.track,
-        artist: d.artist,
-        album: d.album,
-        progressSec: d.progress_sec,
-        durationSec: d.duration_sec,
-        isPlaying: d.is_playing,
-        isLive: d.is_live,
-      };
+      return await widgetsApi.get<SpotifyData>("spotify");
     } catch {
       return DEMO_DATA;
     }

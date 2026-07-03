@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Images } from "lucide-react";
 import { defineWidget, type WidgetRenderProps } from "@/lib/widget-sdk";
+import { widgetsApi } from "@/lib/api/widgets";
 
 interface Memory {
   title: string;
@@ -77,26 +78,32 @@ export const memoryWidget = defineWidget<MemoryData>({
     defaultSize: "lg",
   },
   render: MemoryRenderer,
-  getData: () => ({
-    memories: [
-      {
-        title: "Sunset in Goa",
-        subtitle: "This day last year · Dec 2024",
-        gradient:
-          "linear-gradient(135deg, oklch(0.55 0.18 40), oklch(0.4 0.16 20), oklch(0.3 0.1 300))",
-      },
-      {
-        title: "First snow, Manali",
-        subtitle: "Winter memories · Jan 2025",
-        gradient:
-          "linear-gradient(135deg, oklch(0.6 0.08 240), oklch(0.45 0.1 260), oklch(0.25 0.06 280))",
-      },
-      {
-        title: "Late nights, campus",
-        subtitle: "Recent favorite · Mar 2025",
-        gradient:
-          "linear-gradient(135deg, oklch(0.5 0.16 300), oklch(0.4 0.14 320), oklch(0.3 0.1 260))",
-      },
-    ],
-  }),
+  getData: async (): Promise<MemoryData> => {
+    try {
+      return await widgetsApi.get<MemoryData>("memory");
+    } catch {
+      return {
+        memories: [
+          {
+            title: "Sunset in Goa",
+            subtitle: "This day last year · Dec 2024",
+            gradient:
+              "linear-gradient(135deg, oklch(0.55 0.18 40), oklch(0.4 0.16 20), oklch(0.3 0.1 300))",
+          },
+          {
+            title: "First snow, Manali",
+            subtitle: "Winter memories · Jan 2025",
+            gradient:
+              "linear-gradient(135deg, oklch(0.6 0.08 240), oklch(0.45 0.1 260), oklch(0.25 0.06 280))",
+          },
+          {
+            title: "Late nights, campus",
+            subtitle: "Recent favorite · Mar 2025",
+            gradient:
+              "linear-gradient(135deg, oklch(0.5 0.16 300), oklch(0.4 0.14 320), oklch(0.3 0.1 260))",
+          },
+        ],
+      };
+    }
+  },
 });

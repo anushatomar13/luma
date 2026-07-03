@@ -1,9 +1,12 @@
 "use client";
 
 import { useState, type ComponentProps } from "react";
-import { Check, Pencil, Plus, RotateCcw } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { Check, Pencil, Plus, RefreshCw, RotateCcw } from "lucide-react";
 import { useDashboardStore } from "@/lib/store/dashboard-store";
 import { useHydratedDashboard } from "@/lib/hooks/use-hydrated-dashboard";
+import { useAuthStore } from "@/lib/store/auth-store";
+import { widgetsApi } from "@/lib/api/widgets";
 import { defaultLayout } from "@/widgets";
 import { cn } from "@/lib/utils";
 import { DashboardGrid } from "./dashboard-grid";
@@ -12,17 +15,32 @@ import { AddWidgetPanel } from "./add-widget-panel";
 
 export function DashboardView() {
   const hydrated = useHydratedDashboard();
+  const queryClient = useQueryClient();
 
   const storeLayout = useDashboardStore((s) => s.layout);
   const toggleEditing = useDashboardStore((s) => s.toggleEditing);
   const resetLayout = useDashboardStore((s) => s.resetLayout);
   const editing = useDashboardStore((s) => s.editing);
+  const isAuthed = useAuthStore((s) => Boolean(s.token));
 
   // Until the persisted layout has rehydrated, render the default so the server
   // and first client render agree.
   const layout = hydrated ? storeLayout : defaultLayout;
 
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+
+  async function handleSync() {
+    setSyncing(true);
+    try {
+      await widgetsApi.sync();
+      await queryClient.invalidateQueries({ queryKey: ["widget"] });
+    } catch {
+      // ignore — widgets keep their current data
+    } finally {
+      setSyncing(false);
+    }
+  }
 
   return (
     <main className="relative mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6 sm:py-10">
@@ -39,6 +57,14 @@ export function DashboardView() {
             <ToolbarButton onClick={resetLayout}>
               <RotateCcw className="size-4" />
               <span className="hidden sm:inline">Reset</span>
+            </ToolbarButton>
+          )}
+          {hydrated && isAuthed && !editing && (
+            <ToolbarButton onClick={handleSync} disabled={syncing}>
+              <RefreshCw className={cn("size-4", syncing && "animate-spin")} />
+              <span className="hidden sm:inline">
+                {syncing ? "Syncing…" : "Sync"}
+              </span>
             </ToolbarButton>
           )}
           <ToolbarButton onClick={() => setPickerOpen(true)}>

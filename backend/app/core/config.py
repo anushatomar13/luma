@@ -46,6 +46,18 @@ class Settings(BaseSettings):
     def spotify_configured(self) -> bool:
         return bool(self.spotify_client_id and self.spotify_client_secret)
 
+    @property
+    def google_configured(self) -> bool:
+        return bool(self.google_client_id and self.google_client_secret)
+
+    # Background jobs — Redis broker in prod; without it Celery runs eagerly
+    # (in-process, synchronous) so the pipeline works with zero extra infra.
+    redis_url: str | None = None
+
+    @property
+    def celery_always_eager(self) -> bool:
+        return self.redis_url is None
+
 
 @lru_cache
 def get_settings() -> Settings:

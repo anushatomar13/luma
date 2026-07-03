@@ -20,3 +20,6 @@ python-multipart>=0.0.9
 
 # HTTP client (OAuth token exchange, tests)
 httpx>=0.28
+
+# Background jobs (Redis broker in prod; runs eagerly in-process without it)
+celery[redis]>=5.4
