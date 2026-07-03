@@ -31,6 +31,21 @@ class Settings(BaseSettings):
     google_client_secret: str | None = None
     oauth_redirect_base: str = "http://localhost:3000"
 
+    # Frontend origin (post-OAuth redirects land here)
+    frontend_url: str = "http://localhost:3000"
+
+    # Spotify integration (optional — the widget serves demo data until configured)
+    spotify_client_id: str | None = None
+    spotify_client_secret: str | None = None
+    spotify_redirect_uri: str = "http://localhost:8000/api/v1/spotify/callback"
+    spotify_scopes: str = (
+        "user-read-currently-playing user-read-recently-played user-top-read"
+    )
+
+    @property
+    def spotify_configured(self) -> bool:
+        return bool(self.spotify_client_id and self.spotify_client_secret)
+
 
 @lru_cache
 def get_settings() -> Settings:

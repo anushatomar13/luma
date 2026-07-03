@@ -37,3 +37,21 @@ async def get_current_user(
 
 
 CurrentUser = Annotated[User, Depends(get_current_user)]
+
+
+async def get_current_user_optional(
+    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(_bearer)],
+    db: DbSession,
+) -> User | None:
+    """Like get_current_user but returns None instead of raising when there's no
+    valid token — used by endpoints that serve demo data to anonymous callers."""
+    if credentials is None:
+        return None
+    user_id = decode_access_token(credentials.credentials)
+    if not user_id:
+        return None
+    user = await user_service.get_by_id(db, user_id)
+    return user if user and user.is_active else None
+
+
+CurrentUserOptional = Annotated[User | None, Depends(get_current_user_optional)]

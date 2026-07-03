@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import { Disc3 } from "lucide-react";
 import { defineWidget, type WidgetRenderProps } from "@/lib/widget-sdk";
+import { spotifyApi } from "@/lib/api/spotify";
 
 interface SpotifyData {
   track: string;
@@ -11,7 +12,19 @@ interface SpotifyData {
   progressSec: number;
   durationSec: number;
   isPlaying: boolean;
+  /** True when sourced from a connected Spotify account, false for demo data. */
+  isLive: boolean;
 }
+
+const DEMO_DATA: SpotifyData = {
+  track: "Midnight City",
+  artist: "M83",
+  album: "Hurry Up, We're Dreaming",
+  progressSec: 154,
+  durationSec: 241,
+  isPlaying: true,
+  isLive: false,
+};
 
 /** Fixed base heights (0–1) so SSR markup is deterministic; motion animates on top. */
 const WAVE_BARS = [
@@ -50,6 +63,12 @@ function SpotifyRenderer({ data }: WidgetRenderProps<SpotifyData>) {
           <p className="mt-1 truncate text-xs text-muted-foreground/70">
             {data.album}
           </p>
+          <span className="mt-1.5 inline-flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/70">
+            <span
+              className={`size-1.5 rounded-full ${data.isLive ? "bg-emerald-400" : "bg-muted-foreground/50"}`}
+            />
+            {data.isLive ? "Live" : "Demo"}
+          </span>
         </div>
       </div>
 
@@ -112,12 +131,22 @@ export const spotifyWidget = defineWidget<SpotifyData>({
     requiresConnection: "spotify",
   },
   render: SpotifyRenderer,
-  getData: () => ({
-    track: "Midnight City",
-    artist: "M83",
-    album: "Hurry Up, We're Dreaming",
-    progressSec: 154,
-    durationSec: 241,
-    isPlaying: true,
-  }),
+  // Pulls from the backend Spotify sync service (live data when connected, demo
+  // otherwise). Falls back to local demo data if the API is unreachable.
+  getData: async (): Promise<SpotifyData> => {
+    try {
+      const d = await spotifyApi.getWidget();
+      return {
+        track: d.track,
+        artist: d.artist,
+        album: d.album,
+        progressSec: d.progress_sec,
+        durationSec: d.duration_sec,
+        isPlaying: d.is_playing,
+        isLive: d.is_live,
+      };
+    } catch {
+      return DEMO_DATA;
+    }
+  },
 });
