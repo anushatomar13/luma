@@ -7,6 +7,8 @@ import { tasteWidget } from "./taste";
 import { todayWidget } from "./today";
 import { growthWidget } from "./growth";
 import { quoteWidget } from "./quote";
+import { insightsWidget } from "./insights";
+import { timelineWidget } from "./timeline";
 
 /**
  * The widget catalog. Importing this module registers every widget as a side
@@ -22,6 +24,8 @@ export const widgets = [
   todayWidget,
   growthWidget,
   quoteWidget,
+  insightsWidget,
+  timelineWidget,
 ];
 
 widgetRegistry.registerAll(widgets);
@@ -33,6 +37,8 @@ widgetRegistry.registerAll(widgets);
 export const defaultLayout: DashboardLayoutItem[] = [
   { id: "d-spotify", widgetId: "spotify", size: "lg" },
   { id: "d-life-pulse", widgetId: "life-pulse", size: "lg" },
+  { id: "d-insights", widgetId: "insights", size: "lg" },
+  { id: "d-timeline", widgetId: "timeline", size: "tall" },
   { id: "d-memory", widgetId: "memory", size: "lg" },
   { id: "d-travel", widgetId: "travel", size: "lg" },
   { id: "d-today", widgetId: "today", size: "md" },

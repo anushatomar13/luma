@@ -2,10 +2,13 @@ import datetime as dt
 
 from sqlalchemy.orm import Session
 
+from app.ai import summarize_snapshot
+from app.ai.embeddings import get_embedding_provider
 from app.db.sync_session import SyncSessionLocal
 from app.models.connection import Connection
 from app.models.sync_job import SyncJob
 from app.models.widget_snapshot import WidgetSnapshot
+from app.services import document_service
 from app.sync import sync_registry
 from app.worker.celery_app import celery_app
 
@@ -30,8 +33,16 @@ def sync_provider(user_id: str, provider: str) -> dict:
                 .first()
             )
             for widget_id in service.widgets:
-                data, is_live = service.resolve(widget_id, conn)
+                if service.needs_context:
+                    data, is_live = service.resolve_with_context(
+                        widget_id, db, user_id
+                    )
+                else:
+                    data, is_live = service.resolve(widget_id, conn)
                 _upsert_snapshot(db, user_id, widget_id, data, is_live)
+                # AI enrichment: embed the snapshot for semantic search.
+                if not service.needs_context:
+                    _embed_snapshot(db, user_id, widget_id, data)
             job.status = "done"
         except Exception:
             job.status = "failed"
@@ -59,3 +70,13 @@ def _upsert_snapshot(
         snap.data = data
         snap.is_live = is_live
     db.commit()
+
+
+def _embed_snapshot(
+    db: Session, user_id: str, widget_id: str, data: dict
+) -> None:
+    text = summarize_snapshot(widget_id, data)
+    embedding = get_embedding_provider().embed(text)
+    document_service.upsert_sync(
+        db, user_id=user_id, kind=widget_id, text=text, embedding=embedding
+    )
