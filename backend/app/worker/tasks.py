@@ -7,8 +7,9 @@ from app.ai.embeddings import get_embedding_provider
 from app.db.sync_session import SyncSessionLocal
 from app.models.connection import Connection
 from app.models.sync_job import SyncJob
+from app.models.user import User
 from app.models.widget_snapshot import WidgetSnapshot
-from app.services import document_service
+from app.services import document_service, summary_service
 from app.sync import sync_registry
 from app.worker.celery_app import celery_app
 
@@ -70,6 +71,19 @@ def _upsert_snapshot(
         snap.data = data
         snap.is_live = is_live
     db.commit()
+
+
+@celery_app.task(name="generate_weekly_summaries")
+def generate_weekly_summaries() -> dict:
+    """Scheduled weekly recap generation for every user (see beat_schedule).
+    In production this would persist/notify; here it builds the recap."""
+    count = 0
+    with SyncSessionLocal() as db:
+        for user in db.query(User).all():
+            snaps = db.query(WidgetSnapshot).filter_by(user_id=user.id).all()
+            summary_service.build({s.widget_id: s.data for s in snaps}, "weekly")
+            count += 1
+    return {"users": count}
 
 
 def _embed_snapshot(

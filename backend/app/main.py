@@ -1,7 +1,16 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import auth, health, oauth, search, spotify, sync, widgets
+from app.api.routes import (
+    auth,
+    health,
+    oauth,
+    search,
+    spotify,
+    summaries,
+    sync,
+    widgets,
+)
 from app.core.config import settings
 
 
@@ -27,6 +36,7 @@ def create_app() -> FastAPI:
     app.include_router(widgets.router, prefix=settings.api_v1_prefix)
     app.include_router(sync.router, prefix=settings.api_v1_prefix)
     app.include_router(search.router, prefix=settings.api_v1_prefix)
+    app.include_router(summaries.router, prefix=settings.api_v1_prefix)
 
     return app
 

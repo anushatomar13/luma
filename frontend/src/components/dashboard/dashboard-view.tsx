@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, type ComponentProps } from "react";
+import Link from "next/link";
 import { useQueryClient } from "@tanstack/react-query";
-import { Check, Pencil, Plus, RefreshCw, RotateCcw } from "lucide-react";
+import { Check, Pencil, Plus, RefreshCw, RotateCcw, Sparkles } from "lucide-react";
 import { useDashboardStore } from "@/lib/store/dashboard-store";
 import { useHydratedDashboard } from "@/lib/hooks/use-hydrated-dashboard";
 import { useAuthStore } from "@/lib/store/auth-store";
@@ -66,6 +67,15 @@ export function DashboardView() {
                 {syncing ? "Syncing…" : "Sync"}
               </span>
             </ToolbarButton>
+          )}
+          {!editing && (
+            <Link
+              href="/recap"
+              className="inline-flex h-9 items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3.5 text-sm font-medium text-foreground transition-colors hover:bg-white/[0.06]"
+            >
+              <Sparkles className="size-4" />
+              <span className="hidden sm:inline">Recap</span>
+            </Link>
           )}
           <ToolbarButton onClick={() => setPickerOpen(true)}>
             <Plus className="size-4" />
